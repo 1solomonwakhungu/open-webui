@@ -10,7 +10,7 @@ from open_webui.env import (
 )
 from PIL import Image
 
-_USER_PROFILE_IMAGE_RE = re.compile(r'^/api/v1/users/[^/?#]+/profile/image$')
+_USER_PROFILE_IMAGE_RE = re.compile(r'^/api/v1/users/[^/?#\\\s]+/profile/image\Z')
 
 # Data-URI prefix validator derived from PROFILE_IMAGE_ALLOWED_MIME_TYPES.
 _mime_suffixes = '|'.join(re.escape(t.split('/')[-1]) for t in sorted(PROFILE_IMAGE_ALLOWED_MIME_TYPES))

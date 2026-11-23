@@ -31,15 +31,20 @@ def fill_missing_permissions(permissions: dict[str, Any], default_permissions: d
 
 def combine_permissions(permissions: dict[str, Any], group_permissions: dict[str, Any]) -> dict[str, Any]:
     """Combine permissions from multiple groups by taking the most permissive value."""
+    if not isinstance(permissions, dict):
+        permissions = {}
+    if not isinstance(group_permissions, dict):
+        return permissions
+
     for key, value in group_permissions.items():
         if isinstance(value, dict):
-            if key not in permissions:
+            if key not in permissions or not isinstance(permissions[key], dict):
                 permissions[key] = {}
             permissions[key] = combine_permissions(permissions[key], value)
         else:
             if key not in permissions:
                 permissions[key] = value
-            else:
+            elif not isinstance(permissions[key], dict):
                 permissions[key] = permissions[key] or value  # Use the most permissive value (True > False)
     return permissions
 
@@ -83,7 +88,7 @@ async def has_permission(
     def get_permission(permissions: dict[str, Any], keys: list[str]) -> bool:
         """Traverse permissions dict using a list of keys (from dot-split permission_key)."""
         for key in keys:
-            if key not in permissions:
+            if not isinstance(permissions, dict) or key not in permissions:
                 return False  # If any part of the hierarchy is missing, deny access
             permissions = permissions[key]  # Traverse one level deeper
 
